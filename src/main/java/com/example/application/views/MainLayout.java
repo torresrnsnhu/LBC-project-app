@@ -6,6 +6,7 @@ import com.example.application.data.entity.User;
 import com.example.application.security.AuthenticatedUser;
 import com.example.application.views.about.AboutView;
 import com.example.application.views.helloworld.HelloWorldView;
+import com.example.application.views.members.MembersListView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -73,6 +74,9 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(HelloWorldView.class)) {
             nav.addItem(new AppNavItem("Hello World", HelloWorldView.class, "la la-globe"));
 
+        }
+        if(accessChecker.hasAccess((MembersListView.class))){
+            nav.addItem(new AppNavItem("V.I.P Members", MembersListView.class));
         }
         if (accessChecker.hasAccess(AboutView.class)) {
             nav.addItem(new AppNavItem("About", AboutView.class, "la la-file"));

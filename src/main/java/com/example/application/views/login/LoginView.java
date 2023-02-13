@@ -1,8 +1,14 @@
 package com.example.application.views.login;
 
 import com.example.application.security.AuthenticatedUser;
+import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -11,36 +17,38 @@ import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
+import static org.apache.el.lang.ELArithmetic.add;
+
 @AnonymousAllowed
 @PageTitle("Login")
 @Route(value = "login")
-public class LoginView extends LoginOverlay implements BeforeEnterObserver {
+public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
-    private final AuthenticatedUser authenticatedUser;
+    private final LoginForm loginForm = new LoginForm();
 
-    public LoginView(AuthenticatedUser authenticatedUser) {
-        this.authenticatedUser = authenticatedUser;
-        setAction(RouteUtil.getRoutePath(VaadinService.getCurrent().getContext(), getClass()));
+    public LoginView() {
+        Image logoImage = new Image();
+        logoImage.setWidth(300, Unit.PIXELS);
+        logoImage.setHeight(300, Unit.PIXELS);
+        add(logoImage);
 
-        LoginI18n i18n = LoginI18n.createDefault();
-        i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("My App");
-        i18n.getHeader().setDescription("Login using user/user or admin/admin");
-        i18n.setAdditionalInformation(null);
-        setI18n(i18n);
+        addClassName("login-view");
+        logoImage.setSizeFull();
+        setAlignItems(FlexComponent.Alignment.CENTER);
+        setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
-        setForgotPasswordButtonVisible(false);
-        setOpened(true);
+        loginForm.setAction("login");
+
+        add(loginForm);
     }
 
     @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        if (authenticatedUser.get().isPresent()) {
-            // Already logged in
-            setOpened(false);
-            event.forwardTo("");
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        if(beforeEnterEvent.getLocation()
+                .getQueryParameters()
+                .getParameters()
+                .containsKey("error")){
+            loginForm.setError(true);
         }
-
-        setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
     }
 }
